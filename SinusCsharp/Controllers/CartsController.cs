@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Quic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -22,6 +23,14 @@ namespace SinusCsharp.Controllers
         // GET: Carts
         public async Task<IActionResult> Index()
         {
+            //var result = _context.Cart
+            //  .GroupBy(c => c.ProductId)
+            //  .Select(p => new Models.Cart
+            //  {
+            //      ProductId = p.Select(x => x.ProductId).FirstOrDefault(),
+            //      Quantity = p.Sum(x => x.Quantity),
+            //  }).ToList();
+
               return _context.Cart != null ? 
                           View(await _context.Cart.ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Cart'  is null.");
