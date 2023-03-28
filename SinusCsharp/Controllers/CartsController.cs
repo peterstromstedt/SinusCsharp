@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Quic;
 using System.Threading.Tasks;
+using Humanizer.Localisation.TimeToClockNotation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using SinusCsharp.Data;
 using SinusCsharp.Models;
@@ -175,8 +177,34 @@ namespace SinusCsharp.Controllers
             if (ModelState.IsValid)
             {
                 Cart cart = new Cart() { ProductId = id, Quantity = 1};
-                _context.Add(cart);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    _context.Add(cart);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateException ex)
+                {
+                    if (ex.InnerException is SqlException sqlException)
+                    {
+                        // Check if the error code indicates a unique key constraint violation
+                        if (sqlException.Number == 2627 || sqlException.Number == 2601)
+                        {
+                            //Only update the specifik field qty
+                            var cartItem = _context.Cart.SingleOrDefault(x => x.ProductId == id);
+                            int qty = cartItem.Quantity +1;
+                            _context.Cart.Where(x => x.ProductId == id)
+                                .ExecuteUpdate(q => q.SetProperty(p => p.Quantity, qty));
+                        }
+                        else
+                        {
+                            // Handle other SQL exceptions
+                            // For example:
+                            Console.WriteLine("An SQL exception occurred with error code " + sqlException.Number);
+                        }
+                    }
+
+                }
+                
             }
             return RedirectToAction("Index", "Products");
         }
