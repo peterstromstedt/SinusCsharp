@@ -164,5 +164,19 @@ namespace SinusCsharp.Controllers
         {
           return (_context.Order?.Any(e => e.OrderId == id)).GetValueOrDefault();
         }
+
+     
+        // adding stuff to the cart
+        //public async Task<IActionResult> Buy(int id)
+        //{            
+        //    if (ModelState.IsValid)
+        //    {
+        //        _context.Add(id);
+        //        await _context.SaveChangesAsync();                
+        //    }           
+        //    return RedirectToAction("Products", "Index");
+        //}
+         //// chat gpt explains the ?
+         //   if (cart.FirstOrDefault()?.ProductId == id)
     }
 }
