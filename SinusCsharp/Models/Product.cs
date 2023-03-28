@@ -11,8 +11,6 @@ namespace SinusCsharp.Models
         public decimal Price { get; set; }
         public string Description { get; set; }
 
-        public string Anna { get; set; }
-
         // setting default values here aswell
         public bool IsAvailable { get; set; } = true;
         public int Stock { get; set; } = 50;
