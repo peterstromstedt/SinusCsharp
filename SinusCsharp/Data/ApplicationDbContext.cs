@@ -10,9 +10,9 @@ namespace SinusCsharp.Data
             : base(options)
         {
         }
-        public DbSet<SinusCsharp.Models.Product> Product { get; set; } = default!;
-        public DbSet<SinusCsharp.Models.Customer> Customer { get; set; } = default!;
-        public DbSet<SinusCsharp.Models.Order> Order { get; set; } = default!;
-        public DbSet<SinusCsharp.Models.OrderDetail> OrderDetail { get; set; } = default!;
+        public DbSet<Product> Product { get; set; } = default!;
+        public DbSet<Customer> Customer { get; set; } = default!;
+        public DbSet<Order> Order { get; set; } = default!;
+        public DbSet<OrderDetail> OrderDetail { get; set; } = default!;
     }
 }
