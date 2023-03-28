@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SinusCsharp.Models
 {
@@ -8,6 +10,7 @@ namespace SinusCsharp.Models
         public int ProductId { get; set; }
         public string Title { get; set; }
         public string Color { get; set; }
+        [Column(TypeName = "Money")]
         public decimal Price { get; set; }
         public string Description { get; set; }
 
