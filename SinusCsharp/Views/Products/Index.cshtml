@@ -11,26 +11,28 @@
 </p>
 
 
-@foreach (var item in Model) {
+<div class="row">
+
+    @foreach (var item in Model) {
          
 
-    <div class="card" style="width: 18rem;">
-        <img src="@item.ImageURL" class="card-img-top" alt="...">
-        <div class="card-body">
-            <h5 class="card-title"> @item.Title</h5>
-            <p class="card-text">@item.Color</p>
-            <p class="card-text">@item.Price</p>
-            <p class="card-text">@item.Description</p>
-            <a href="#" class="btn btn-primary">Go somewhere</a>
+        <div class="card" style="width: 18rem;margin: 1rem">
+            <img src="@item.ImageURL" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title"> @item.Title</h5>
+                <p class="card-text">@item.Color</p>
+                <p class="card-text">@item.Price</p>
+                <p class="card-text">@item.Description</p>
+                <a class="btn btn-primary" asp-controller="Carts" asp-action="Buy" asp-route-id="@item.ProductId">Add To Cart</a>
+            </div>
+            <div>
+                <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>      
+            </div>
         </div>
-        <div>
-            <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
-            <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
-            <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a> |
-            <a asp-controller="Carts" asp-action="Buy" asp-route-id="@item.ProductId">Buy</a>
-        </div>
-    </div>
-}
+    }
+</div>
 
 
 
