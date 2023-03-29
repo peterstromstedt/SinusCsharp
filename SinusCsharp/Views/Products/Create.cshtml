@@ -11,6 +11,9 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
+            <div class="form-group text-center">
+                <img id="ImageURLpreview" style="max-height: 400px"/>
+            </div>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
@@ -60,4 +63,18 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // this shows the picture if you input something wrong, so it stays there.
+        $(document).ready(function (){
+            var output = document.getElementById('ImageURLpreview');
+            output.src = $("#ImageURL").val();
+        })
+
+        // this shows the picture when its added in the link
+        $("#ImageURL").on("change", function ()
+        {
+            var output = document.getElementById('ImageURLpreview');
+            output.src = $(this).val();
+        });
+    </script>
 }
