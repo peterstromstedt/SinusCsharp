@@ -23,7 +23,7 @@ namespace SinusCsharp.Controllers
                 cookieCart.Expires = DateTime.UtcNow.AddDays(5);
                 cookieCart.Path = "/"; //Also defaultvalue. Will be accessible "everywhere"
 
-                //https://code-maze.com/csharp-object-into-json-string-dotnet/
+                // https://code-maze.com/csharp-object-into-json-string-dotnet/
                 var jsonString = JsonSerializer.Serialize(cart);
 
                 Response.Cookies.Append("Cart", jsonString, cookieCart);

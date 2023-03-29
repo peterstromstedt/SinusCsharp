@@ -25,7 +25,7 @@ namespace SinusCsharp.Controllers
         }
 
         // GET: Carts
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             var json = Request.Cookies["Cart"];
             List<Cart>? cartList = JsonSerializer.Deserialize<List<Cart>>(json);
@@ -33,9 +33,8 @@ namespace SinusCsharp.Controllers
             return View(cartList);
         }
 
-
         // GET: Carts/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int? id)
         {
             if (id == null)
             {
@@ -57,7 +56,7 @@ namespace SinusCsharp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Quantity")] Cart cart)
+        public IActionResult Edit(int id, [Bind("ProductId,Quantity")] Cart cart)
         {
             if (id != cart.ProductId)
             {
@@ -76,7 +75,7 @@ namespace SinusCsharp.Controllers
         }
 
         // GET: Carts/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id == null)
             {
@@ -98,7 +97,7 @@ namespace SinusCsharp.Controllers
         // POST: Carts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
 
             var cartList = GetCartListFromCookie();
@@ -112,10 +111,8 @@ namespace SinusCsharp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
-
         //Get
-        public async Task<IActionResult> Buy(int id)
+        public IActionResult Buy(int id)
         {
             Cart cart = new Cart() { ProductId = id, Quantity = 1 };
 
