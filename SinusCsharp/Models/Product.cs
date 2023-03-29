@@ -9,6 +9,7 @@ namespace SinusCsharp.Models
         [Key]
         public int ProductId { get; set; }
         public string Title { get; set; }
+        public string ImageURL { get; set; }
         public string Color { get; set; }
         [Column(TypeName = "Money")]
         public decimal Price { get; set; }

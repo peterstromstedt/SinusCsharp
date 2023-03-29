@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,8 @@ namespace SinusCsharp.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-              return _context.Product != null ? 
+
+            return _context.Product != null ? 
                           View(await _context.Product.ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Product'  is null.");
         }
@@ -56,7 +58,7 @@ namespace SinusCsharp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Color,Price,Description,IsAvailable,Stock")] Product product)
+        public async Task<IActionResult> Create([Bind("Title,ImageURL,Color,Price,Description,IsAvailable,Stock")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -88,7 +90,7 @@ namespace SinusCsharp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Title,Color,Price,Description,IsAvailable,Stock")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Title,ImageURL,Color,Price,Description,IsAvailable,Stock")] Product product)
         {
             if (id != product.ProductId)
             {
@@ -158,6 +160,11 @@ namespace SinusCsharp.Controllers
         private bool ProductExists(int id)
         {
           return (_context.Product?.Any(e => e.ProductId == id)).GetValueOrDefault();
+        }
+
+        public IActionResult Ninja()
+        {
+            return View();
         }
     }
 }

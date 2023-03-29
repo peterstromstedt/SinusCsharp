@@ -9,66 +9,31 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Color)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsAvailable)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Stock)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
+
+
 @foreach (var item in Model) {
-            @*<form asp-controller="Orders" asp-action="Buy">*@
-               
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Color)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsAvailable)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Stock)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a> |
-                <a asp-controller="Carts" asp-action="Buy" asp-route-id="@item.ProductId">Buy</a>
-                @*<a asp-controller="Orders" asp-action="Buy" asp-route-id="@item.ProductId">Buy</a>*@
-                   @*<form asp-controller="Orders" asp-action="Buy">*@
-                 @*<input type="hidden" value="@item.ProductId"/>
-                 <input type="submit" value="Buy"/>*@
-                @*   </form>*@
-            </td>
-        </tr>
-            @*</form>*@
-        }
-    </tbody>
-</table>
+         
+
+    <div class="card" style="width: 18rem;">
+        <img src="@item.ImageURL" class="card-img-top" alt="...">
+        <div class="card-body">
+            <h5 class="card-title"> @item.Title</h5>
+            <p class="card-text">@item.Color</p>
+            <p class="card-text">@item.Price</p>
+            <p class="card-text">@item.Description</p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+        <div>
+            <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
+            <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
+            <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a> |
+            <a asp-controller="Carts" asp-action="Buy" asp-route-id="@item.ProductId">Buy</a>
+        </div>
+    </div>
+}
+
+
+
+
+            
+ 

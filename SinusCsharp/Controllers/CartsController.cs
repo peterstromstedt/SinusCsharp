@@ -1,97 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Quic;
-using System.Threading.Tasks;
-using Humanizer.Localisation.TimeToClockNotation;
+﻿
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using SinusCsharp.Data;
+using SinusCsharp.Data.Services;
 using SinusCsharp.Models;
+
 
 namespace SinusCsharp.Controllers
 {
     public class CartsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ICartService _cartService;
 
-        public CartsController(ApplicationDbContext context)
+        public CartsController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor,
+            ICartService cartService)
         {
+            _cartService = cartService;
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         // GET: Carts
         public async Task<IActionResult> Index()
         {
-            //var result = _context.Cart
-            //  .GroupBy(c => c.ProductId)
-            //  .Select(p => new Models.Cart
-            //  {
-            //      ProductId = p.Select(x => x.ProductId).FirstOrDefault(),
-            //      Quantity = p.Sum(x => x.Quantity),
-            //  }).ToList();
+            var json = Request.Cookies["Cart"];
+            List<Cart>? cartList = JsonSerializer.Deserialize<List<Cart>>(json);
 
-              return _context.Cart != null ? 
-                          View(await _context.Cart.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Cart'  is null.");
+            return View(cartList);
         }
 
-        // GET: Carts/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.Cart == null)
-            {
-                return NotFound();
-            }
-
-            var cart = await _context.Cart
-                .FirstOrDefaultAsync(m => m.CartId == id);
-            if (cart == null)
-            {
-                return NotFound();
-            }
-
-            return View(cart);
-        }
-
-        // GET: Carts/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Carts/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CartId,ProductId,Quantity")] Cart cart)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(cart);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(cart);
-        }
 
         // GET: Carts/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Cart == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var cart = await _context.Cart.FindAsync(id);
-            if (cart == null)
+            List<Cart> cartList = GetCartListFromCookie();
+            var item = cartList.FirstOrDefault(i => i.ProductId == id);
+            
+            if (item == null)
             {
                 return NotFound();
             }
-            return View(cart);
+            return View(item);
         }
 
         // POST: Carts/Edit/5
@@ -99,31 +57,19 @@ namespace SinusCsharp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CartId,ProductId,Quantity")] Cart cart)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Quantity")] Cart cart)
         {
-            if (id != cart.CartId)
+            if (id != cart.ProductId)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(cart);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CartExists(cart.CartId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                List<Cart> cartList = GetCartListFromCookie();
+                cartList = _cartService.UpdateQuantityOfAProduct(cartList, cart);
+                AddCartListToCookie(cartList);
+  
                 return RedirectToAction(nameof(Index));
             }
             return View(cart);
@@ -132,13 +78,15 @@ namespace SinusCsharp.Controllers
         // GET: Carts/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Cart == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var cart = await _context.Cart
-                .FirstOrDefaultAsync(m => m.CartId == id);
+            List<Cart> cartList = GetCartListFromCookie();
+
+            var cart = cartList.FirstOrDefault(m => m.ProductId == id);
+
             if (cart == null)
             {
                 return NotFound();
@@ -152,26 +100,52 @@ namespace SinusCsharp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Cart == null)
+
+            var cartList = GetCartListFromCookie();
+
+            if (cartList != null)
             {
-                return Problem("Entity set 'ApplicationDbContext.Cart'  is null.");
+                cartList.RemoveAll(i => i.ProductId == id);
             }
-            var cart = await _context.Cart.FindAsync(id);
-            if (cart != null)
-            {
-                _context.Cart.Remove(cart);
-            }
-            
-            await _context.SaveChangesAsync();
+            AddCartListToCookie(cartList);
+
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CartExists(int id)
+
+
+        //Get
+        public async Task<IActionResult> Buy(int id)
         {
-          return (_context.Cart?.Any(e => e.CartId == id)).GetValueOrDefault();
+            Cart cart = new Cart() { ProductId = id, Quantity = 1 };
+
+            List<Cart>? cartList = GetCartListFromCookie();
+
+            cartList = _cartService.AddProductToCart(cartList, cart);
+
+            AddCartListToCookie(cartList);
+
+            return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Buy(int id)
+        private List<Cart> GetCartListFromCookie()
+        {
+            //Unserialize cartList from Cookie
+            var json = Request.Cookies["Cart"];
+            List<Cart>? cartList = JsonSerializer.Deserialize<List<Cart>>(json);
+            return cartList;
+        }
+        private void AddCartListToCookie(List<Cart> cartList)
+        {
+            //Serialize new cartList
+            var jsonString = JsonSerializer.Serialize(cartList);
+            Response.Cookies.Append("Cart", jsonString);
+        }
+
+
+
+        // Not needed but nice example of try-catch specifik sqlException
+        /*public async Task<IActionResult> Buy2(int id)
         {
 
             if (ModelState.IsValid)
@@ -180,9 +154,9 @@ namespace SinusCsharp.Controllers
                 try
                 {
                     _context.Add(cart);
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();  
                 }
-                catch (DbUpdateException ex)
+                catch (DbUpdateException ex) 
                 {
                     if (ex.InnerException is SqlException sqlException)
                     {
@@ -192,6 +166,7 @@ namespace SinusCsharp.Controllers
                             //Only update the specifik field qty
                             var cartItem = _context.Cart.SingleOrDefault(x => x.ProductId == id);
                             int qty = cartItem.Quantity +1;
+         
                             _context.Cart.Where(x => x.ProductId == id)
                                 .ExecuteUpdate(q => q.SetProperty(p => p.Quantity, qty));
                         }
@@ -207,6 +182,6 @@ namespace SinusCsharp.Controllers
                 
             }
             return RedirectToAction("Index", "Products");
-        }
+        } */
     }
 }

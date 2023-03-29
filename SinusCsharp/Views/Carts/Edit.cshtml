@@ -6,7 +6,7 @@
 
 <h1>Edit</h1>
 
-<h4>Cart</h4>
+<h3>Cart</h3>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -14,9 +14,9 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="CartId" />
             <div class="form-group">
-                <label asp-for="ProductId" class="control-label"></label>
-                <input asp-for="ProductId" class="form-control" />
-                <span asp-validation-for="ProductId" class="text-danger"></span>
+                <input type="hidden" asp-for="ProductId" class="form-control" />
+                <h4>ProductId = @Model.ProductId</h4>
+
             </div>
             <div class="form-group">
                 <label asp-for="Quantity" class="control-label"></label>

@@ -14,6 +14,7 @@ namespace SinusCsharp.Data
         public DbSet<Customer> Customer { get; set; } = default!;
         public DbSet<Order> Order { get; set; } = default!;
         public DbSet<OrderDetail> OrderDetail { get; set; } = default!;
-        public DbSet<Cart> Cart { get; set; } = default!;
+
+        //public DbSet<Cart> Cart { get; set; } = default!;
     }
 }
