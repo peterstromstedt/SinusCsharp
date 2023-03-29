@@ -15,7 +15,7 @@ namespace SinusCsharp.Controllers
         }
 
         public IActionResult Index()
-        {
+        {            
             if (!HttpContext.Request.Cookies.ContainsKey("Cart"))
             {
                 List<Cart> cart = new();
@@ -29,11 +29,6 @@ namespace SinusCsharp.Controllers
                 Response.Cookies.Append("Cart", jsonString, cookieCart);
             }
             
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
             return View();
         }
 

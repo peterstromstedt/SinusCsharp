@@ -20,3 +20,36 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    background-color: #f7df1e;
+    color: #1d1f20;
+    font-size: 48px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.letter {
+    margin: 0 5px;
+    animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
