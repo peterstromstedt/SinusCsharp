@@ -1,5 +1,6 @@
 global using System.Text.Json;
 global using Microsoft.AspNetCore.Http;
+using eTickets.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SinusCsharp.Data;
@@ -19,6 +20,9 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+//Seed database
+ApplicationDbInitializer.Seed(app);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
