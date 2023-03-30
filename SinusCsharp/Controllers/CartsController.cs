@@ -114,7 +114,9 @@ namespace SinusCsharp.Controllers
         //Get
         public IActionResult Buy(int id)
         {
-            Cart cart = new Cart() { ProductId = id, Quantity = 1 };
+            Product? product = _context.Product.FirstOrDefault(p => p.ProductId == id);
+
+            Cart cart = new() { ProductId = id, Quantity = 1, Product = product };
 
             List<Cart>? cartList = GetCartListFromCookie();
 
