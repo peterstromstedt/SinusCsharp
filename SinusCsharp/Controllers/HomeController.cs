@@ -16,18 +16,6 @@ namespace SinusCsharp.Controllers
 
         public IActionResult Index()
         {            
-            if (!HttpContext.Request.Cookies.ContainsKey("Cart"))
-            {
-                List<Cart> cart = new();
-                CookieOptions cookieCart = new CookieOptions();
-                cookieCart.Expires = DateTime.UtcNow.AddDays(5);
-                cookieCart.Path = "/"; //Also defaultvalue. Will be accessible "everywhere"
-
-                // https://code-maze.com/csharp-object-into-json-string-dotnet/
-                var jsonString = JsonSerializer.Serialize(cart);
-
-                Response.Cookies.Append("Cart", jsonString, cookieCart);
-            }
             
             return View();
         }

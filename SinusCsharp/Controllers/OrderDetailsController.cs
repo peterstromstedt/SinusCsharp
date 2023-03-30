@@ -47,10 +47,31 @@ namespace SinusCsharp.Controllers
         }
 
         // GET: OrderDetails/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["OrderId"] = new SelectList(_context.Order, "OrderId", "OrderId");
-            ViewData["ProductId"] = new SelectList(_context.Product, "ProductId", "ProductId");
+            List<Cart> cartList = GetCartListFromCookie();
+            var orderId = TempData["OrderId"];
+            List<OrderDetail> odList = new();
+
+            foreach(var item in cartList)
+            {
+                OrderDetail od = new()
+                {
+                    OrderId = (int)orderId,
+                    ProductId = item.ProductId,
+                    Quantity= item.Quantity
+                };
+                odList.Add(od);
+            }
+
+            _context.OrderDetail.AddRange(odList);
+            await _context.SaveChangesAsync();
+
+            //Clear cookies
+            Response.Cookies.Delete("Cart");
+            Response.Cookies.Delete("Customer");
+
+
             return View();
         }
 
@@ -169,6 +190,14 @@ namespace SinusCsharp.Controllers
         private bool OrderDetailExists(int id)
         {
           return (_context.OrderDetail?.Any(e => e.OrderDetailId == id)).GetValueOrDefault();
+        }
+
+        private List<Cart> GetCartListFromCookie()
+        {
+            //Unserialize cartList from Cookie
+            var json = Request.Cookies["Cart"];
+            List<Cart>? cartList = JsonSerializer.Deserialize<List<Cart>>(json);
+            return cartList;
         }
     }
 }

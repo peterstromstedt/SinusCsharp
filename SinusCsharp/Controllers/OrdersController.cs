@@ -46,28 +46,22 @@ namespace SinusCsharp.Controllers
         }
 
         // GET: Orders/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["CustomerId"] = new SelectList(_context.Customer, "CustomerId", "Address");
-            return View();
-        }
-
-        // POST: Orders/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("OrderId,CustomerId,Shipped,OrderDate")] Order order)
-        {
-            if (ModelState.IsValid)
+            //var id = Request.Cookies["Customer"];
+            int customerId = int.Parse(Request.Cookies["Customer"]);
+            if(customerId != 0)
             {
+                Order order = new() {CustomerId = customerId, OrderDate = DateTime.Now, Shipped = true};
                 _context.Add(order);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                int orderId = order.OrderId; //Get last inserted Id
+                TempData["OrderId"] = orderId;
+                return RedirectToAction("Create", "OrderDetails");
             }
-            ViewData["CustomerId"] = new SelectList(_context.Customer, "CustomerId", "Address", order.CustomerId);
-            return View(order);
+            return View("Error");
         }
+
 
         // GET: Orders/Edit/5
         public async Task<IActionResult> Edit(int? id)

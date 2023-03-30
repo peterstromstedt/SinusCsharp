@@ -54,7 +54,9 @@
         </dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.CustomerId">Edit</a> |
-    <a asp-controller="Carts" asp-action="Pay" asp-route-id="@Model?.CustomerId">Go To Payment</a>
-</div>
+
+<form asp-controller="Carts" asp-action="Pay">
+    <input type="hidden" asp-for="@Model.CustomerId" />
+    <input type="submit" value="Go To Payment" class="btn btn-success" /> |
+    <a asp-action="Edit" asp-route-id="@Model?.CustomerId">Edit</a> 
+</form>

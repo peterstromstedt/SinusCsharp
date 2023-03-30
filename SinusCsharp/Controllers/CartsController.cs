@@ -27,8 +27,12 @@ namespace SinusCsharp.Controllers
         // GET: Carts
         public IActionResult Index()
         {
-            var json = Request.Cookies["Cart"];
-            List<Cart>? cartList = JsonSerializer.Deserialize<List<Cart>>(json);
+            List<Cart>? cartList = new();
+            if(HttpContext.Request.Cookies.ContainsKey("Cart")) 
+            {
+                var json = Request.Cookies["Cart"];
+                cartList = JsonSerializer.Deserialize<List<Cart>>(json);
+            } 
 
             return View(cartList);
         }
@@ -114,6 +118,19 @@ namespace SinusCsharp.Controllers
         //Get
         public IActionResult Buy(int id)
         {
+            if (!HttpContext.Request.Cookies.ContainsKey("Cart"))
+            {
+                List<Cart> carten = new();
+                CookieOptions cookieCart = new();
+                cookieCart.Expires = DateTime.UtcNow.AddDays(5);
+                cookieCart.Path = "/"; //Also defaultvalue. Will be accessible "everywhere"
+
+                // https://code-maze.com/csharp-object-into-json-string-dotnet/
+                var jsonString = JsonSerializer.Serialize(carten);
+
+                Response.Cookies.Append("Cart", jsonString, cookieCart);
+            }
+
             Product? product = _context.Product.FirstOrDefault(p => p.ProductId == id);
 
             Cart cart = new() { ProductId = id, Quantity = 1, Product = product };
@@ -138,13 +155,16 @@ namespace SinusCsharp.Controllers
                 // https://code-maze.com/csharp-object-into-json-string-dotnet/
                 //var jsonString = JsonSerializer.Serialize(customerId);
 
-                Response.Cookies.Append("Cart", customerId.ToString(), cookieCustomer);
+                Response.Cookies.Append("Customer", customerId.ToString(), cookieCustomer);
+
+                
             }
-            return View();
+            List<Cart> cartList = GetCartListFromCookie();
+            return View(cartList);
         }
 
 
-        private List<Cart> GetCartListFromCookie()
+        public List<Cart> GetCartListFromCookie()
         {
             //Unserialize cartList from Cookie
             var json = Request.Cookies["Cart"];
