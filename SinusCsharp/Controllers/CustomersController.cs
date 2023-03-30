@@ -155,6 +155,30 @@ namespace SinusCsharp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Customers by Email
+        public async Task<IActionResult> GetCustomer(string? Email)
+        {
+            if (Email == null || _context.Customer == null)
+            {              
+                return View("CheckOut");
+            }
+
+            var customer = await _context.Customer
+                .FirstOrDefaultAsync(m => m.Email == Email);
+            if (customer == null)
+            {
+                ViewBag.Message = "No Customer with that email";
+                return View("CheckOut");
+            }
+
+            return View("Details", customer);
+        }
+
+        public IActionResult CheckOut() 
+        { 
+            return View();
+        }
+
         private bool CustomerExists(int id)
         {
           return (_context.Customer?.Any(e => e.CustomerId == id)).GetValueOrDefault();

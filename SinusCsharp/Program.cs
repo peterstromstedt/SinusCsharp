@@ -1,6 +1,5 @@
 global using System.Text.Json;
 global using Microsoft.AspNetCore.Http;
-using eTickets.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SinusCsharp.Data;

@@ -126,6 +126,23 @@ namespace SinusCsharp.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        //
+        public IActionResult Pay(int customerId)
+        {
+            if (!HttpContext.Request.Cookies.ContainsKey("Customer"))
+            {
+                CookieOptions cookieCustomer = new CookieOptions();
+                cookieCustomer.Expires = DateTime.UtcNow.AddMinutes(5);
+                cookieCustomer.Path = "/"; //Also defaultvalue. Will be accessible "everywhere"
+
+                // https://code-maze.com/csharp-object-into-json-string-dotnet/
+                //var jsonString = JsonSerializer.Serialize(customerId);
+
+                Response.Cookies.Append("Cart", customerId.ToString(), cookieCustomer);
+            }
+            return View();
+        }
+
 
         private List<Cart> GetCartListFromCookie()
         {

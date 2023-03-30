@@ -1,7 +1,7 @@
-﻿using SinusCsharp.Data;
+﻿
 using SinusCsharp.Models;
 
-namespace eTickets.Data
+namespace SinusCsharp.Data
 {
     public class ApplicationDbInitializer
     {
