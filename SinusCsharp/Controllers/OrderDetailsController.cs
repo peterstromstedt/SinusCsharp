@@ -71,6 +71,7 @@ namespace SinusCsharp.Controllers
             Response.Cookies.Delete("Cart");
             Response.Cookies.Delete("Customer");
 
+            
 
             return View();
         }
