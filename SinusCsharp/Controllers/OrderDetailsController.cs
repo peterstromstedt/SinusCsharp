@@ -21,6 +21,7 @@ namespace SinusCsharp.Controllers
 
         // GET: OrderDetails
         public async Task<IActionResult> Index()
+
         {
             var applicationDbContext = _context.OrderDetail.Include(o => o.Order).Include(o => o.Product);
             return View(await applicationDbContext.ToListAsync());
@@ -29,21 +30,27 @@ namespace SinusCsharp.Controllers
         // GET: OrderDetails/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            if (TempData["Orderid"] != null)
+            {
+                id = (int)TempData["Orderid"];
+            }
+                
             if (id == null || _context.OrderDetail == null)
             {
                 return NotFound();
             }
-
-            var orderDetail = await _context.OrderDetail
+               
+            List<OrderDetail> orderDetails = await _context.OrderDetail
                 .Include(o => o.Order)
                 .Include(o => o.Product)
-                .FirstOrDefaultAsync(m => m.OrderDetailId == id);
-            if (orderDetail == null)
+                .Where(m => m.OrderId == id).ToListAsync();
+            if (orderDetails == null)
             {
                 return NotFound();
             }
+            ViewBag.OrderId = id;
 
-            return View(orderDetail);
+            return View(orderDetails);
         }
 
         // GET: OrderDetails/Create
@@ -71,30 +78,13 @@ namespace SinusCsharp.Controllers
             Response.Cookies.Delete("Cart");
             Response.Cookies.Delete("Customer");
 
-            
-
-            return View();
+            return RedirectToAction("Confirmation","Carts");
         }
 
-        // POST: OrderDetails/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("OrderDetailId,ProductId,OrderId,Quantity")] OrderDetail orderDetail)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(orderDetail);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["OrderId"] = new SelectList(_context.Order, "OrderId", "OrderId", orderDetail.OrderId);
-            ViewData["ProductId"] = new SelectList(_context.Product, "ProductId", "ProductId", orderDetail.ProductId);
-            return View(orderDetail);
-        }
+
 
         // GET: OrderDetails/Edit/5
+        // Needs ta have variabel id to get asp-route-id from a-tag
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.OrderDetail == null)
@@ -102,14 +92,14 @@ namespace SinusCsharp.Controllers
                 return NotFound();
             }
 
-            var orderDetail = await _context.OrderDetail.FindAsync(id);
-            if (orderDetail == null)
+            var orderDetails = await _context.OrderDetail.Where(p => p.OrderDetailId == id).FirstOrDefaultAsync();
+
+            if (orderDetails == null)
             {
                 return NotFound();
             }
-            ViewData["OrderId"] = new SelectList(_context.Order, "OrderId", "OrderId", orderDetail.OrderId);
-            ViewData["ProductId"] = new SelectList(_context.Product, "ProductId", "ProductId", orderDetail.ProductId);
-            return View(orderDetail);
+            ViewData["OrderId"] = orderDetails.OrderId;
+            return View(orderDetails);
         }
 
         // POST: OrderDetails/Edit/5
@@ -142,10 +132,9 @@ namespace SinusCsharp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                TempData["Orderid"] = orderDetail.OrderId;
+                return RedirectToAction("Details");
             }
-            ViewData["OrderId"] = new SelectList(_context.Order, "OrderId", "OrderId", orderDetail.OrderId);
-            ViewData["ProductId"] = new SelectList(_context.Product, "ProductId", "ProductId", orderDetail.ProductId);
             return View(orderDetail);
         }
 
@@ -185,7 +174,8 @@ namespace SinusCsharp.Controllers
             }
             
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            TempData["OrderId"] = id;
+            return RedirectToAction("Details");
         }
 
         private bool OrderDetailExists(int id)

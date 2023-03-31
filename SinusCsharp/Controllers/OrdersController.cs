@@ -26,24 +26,6 @@ namespace SinusCsharp.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Orders/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.Order == null)
-            {
-                return NotFound();
-            }
-
-            var order = await _context.Order
-                .Include(o => o.Customer)
-                .FirstOrDefaultAsync(m => m.OrderId == id);
-            if (order == null)
-            {
-                return NotFound();
-            }
-
-            return View(order);
-        }
 
         // GET: Orders/Create
         public async Task<IActionResult> Create()
@@ -63,59 +45,6 @@ namespace SinusCsharp.Controllers
         }
 
 
-        // GET: Orders/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.Order == null)
-            {
-                return NotFound();
-            }
-
-            var order = await _context.Order.FindAsync(id);
-            if (order == null)
-            {
-                return NotFound();
-            }
-            ViewData["CustomerId"] = new SelectList(_context.Customer, "CustomerId", "Address", order.CustomerId);
-            return View(order);
-        }
-
-        // POST: Orders/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("OrderId,CustomerId,Shipped,OrderDate")] Order order)
-        {
-            if (id != order.OrderId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(order);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!OrderExists(order.OrderId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CustomerId"] = new SelectList(_context.Customer, "CustomerId", "Address", order.CustomerId);
-            return View(order);
-        }
-
         // GET: Orders/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -123,14 +52,16 @@ namespace SinusCsharp.Controllers
             {
                 return NotFound();
             }
-
-            var order = await _context.Order
-                .Include(o => o.Customer)
-                .FirstOrDefaultAsync(m => m.OrderId == id);
+            var order = await _context.OrderDetail
+                .Include(o => o.Order)
+                .Include(o => o.Product)
+                .Where(m => m.OrderId == id).ToListAsync();
+                
             if (order == null)
             {
                 return NotFound();
             }
+            ViewBag.OrderId = id;
 
             return View(order);
         }
@@ -144,6 +75,15 @@ namespace SinusCsharp.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Order'  is null.");
             }
+            var orderDetails = await _context.OrderDetail.Where(od => od.OrderId == id).ToListAsync();
+            if(orderDetails != null)
+            {
+                foreach(var row in orderDetails)
+                {
+                    _context.OrderDetail.Remove(row);
+                }    
+            }
+
             var order = await _context.Order.FindAsync(id);
             if (order != null)
             {
@@ -159,18 +99,5 @@ namespace SinusCsharp.Controllers
           return (_context.Order?.Any(e => e.OrderId == id)).GetValueOrDefault();
         }
 
-     
-        // adding stuff to the cart
-        //public async Task<IActionResult> Buy(int id)
-        //{            
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Add(id);
-        //        await _context.SaveChangesAsync();                
-        //    }           
-        //    return RedirectToAction("Products", "Index");
-        //}
-         //// chat gpt explains the ?
-         //   if (cart.FirstOrDefault()?.ProductId == id)
     }
 }

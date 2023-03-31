@@ -119,7 +119,6 @@ namespace SinusCsharp.Controllers
         public IActionResult Buy(int id)
         {
 
-
             Product? product = _context.Product.FirstOrDefault(p => p.ProductId == id);
 
             Cart cartobject = new() { ProductId = id, Quantity = 1, Product = product };
@@ -149,6 +148,12 @@ namespace SinusCsharp.Controllers
             }
             List<Cart> cartList = GetCartListFromCookie();
             return View(cartList);
+        }
+        public IActionResult Confirmation()
+        {
+            // Get and send Customer,Order and Productlist to view
+            // Partialview only return the Confirmation view without the layout
+            return PartialView();
         }
 
 
