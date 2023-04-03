@@ -13,7 +13,7 @@
 {
    <a class="btn btn-outline-success float-end" asp-controller="Customers" asp-action="CheckOut" >Go To Checkout</a>
 }
-<table class="table">
+<table class="table align-middle text-center">
     <thead>
         <tr>
             <th></th>
@@ -46,10 +46,10 @@
                 @Html.DisplayFor(modelItem => item.Quantity)
             </td>
             <td>
-                 @Html.DisplayFor(modelItem => item.Product.Price)
+                 @item.Product.Price.ToString("C")
             </td>
             <td>
-                    @(item.Product.Price * item.Quantity)
+                    @((item.Product.Price * item.Quantity).ToString("C"))
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |

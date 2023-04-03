@@ -36,7 +36,11 @@
             </td>
             <td>
                 <a asp-controller="OrderDetails" asp-action="Details" asp-route-id="@item.OrderId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.OrderId">Delete</a>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a asp-action="Delete" asp-route-id="@item.OrderId">Delete</a>
+                    }
+
             </td>
         </tr>
 }

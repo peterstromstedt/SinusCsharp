@@ -174,7 +174,7 @@ namespace SinusCsharp.Controllers
             }
             
             await _context.SaveChangesAsync();
-            TempData["OrderId"] = id;
+            TempData["OrderId"] = orderDetail.OrderId;
             return RedirectToAction("Details");
         }
 
